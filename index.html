@@ -1,112 +1,96 @@
 <!DOCTYPE html>
-<html lang="id" class="dark">
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RadzzOffc | All Paymnet</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  </script>
-  <style>
-    .fade-in {
-      animation: fadeIn 0.4s ease-in-out;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo to URL Converter</title>
+    <style>
+        :root { --primary: #7289da; --bg: #2c2f33; --text: #ffffff; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: #23272a; padding: 2rem; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); width: 100%; max-width: 400px; text-align: center; }
+        input[type="file"] { margin: 20px 0; color: #ccc; }
+        button { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; }
+        button:hover { background: #5b6eae; }
+        button:disabled { background: #4f545c; cursor: not-allowed; }
+        .result-box { margin-top: 20px; padding: 10px; background: #2f3136; border-radius: 4px; display: none; word-break: break-all; }
+        #urlLink { color: #00b0f4; text-decoration: none; font-size: 0.9rem; }
+        .loader { display: none; margin: 10px 0; font-size: 0.8rem; color: #faa61a; }
+    </style>
 </head>
-<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-white min-h-screen flex flex-col justify-between font-sans transition-colors duration-300">
-  <main class="p-6 max-w-xl mx-auto">
-    <div class="flex justify-between items-center mb-4">
-      <h1 class="text-4xl font-black tracking-tight">All Payment Radzz</h1>
-      <button id="theme-toggle" class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-xs px-3 py-1 rounded-full">🌓</button>
+<body>
+
+<div class="card">
+    <h2>Photo ➔ URL</h2>
+    <p style="font-size: 0.8rem; color: #99aab5;">Unggah foto untuk mendapatkan link Catbox</p>
+    
+    <input type="file" id="fileInput" accept="image/*">
+    <button id="uploadBtn">Generate URL</button>
+
+    <div id="loader" class="loader">Sedang mengunggah ke Catbox...</div>
+
+    <div id="resultBox" class="result-box">
+        <p style="margin-top:0; font-size: 0.8rem;">Link Berhasil Dibuat:</p>
+        <a id="urlLink" href="#" target="_blank"></a>
+        <button onclick="copyURL()" style="margin-top: 10px; background: #43b581; padding: 5px; font-size: 0.7rem;">Salin Link</button>
     </div>
-    <p class="text-gray-600 dark:text-gray-400 mb-6 text-base">Pilih metode pembayaran favorit yg akan Anda gunakan dan tinggal click click aja buat copy ^_^</p><div class="space-y-5">
-  <div onclick="toggleQRIS()" class="cursor-pointer rounded-2xl p-5 shadow-lg bg-white dark:bg-gray-800 border-t-4 border-pink-400 hover:scale-[1.02] transition-all duration-200">
-    <div class="flex items-center space-x-5">
-      <img src="https://files.catbox.moe/hrrmsq.jpg" class="w-12 h-12" alt="QRIS">
-      <div>
-        <h2 class="font-bold text-xl">QRIS</h2>
-        <p class="text-sm text-gray-500 dark:text-gray-300">Pembayaran Qris</p>
-      </div>
-    </div>
-    <div id="qris-img" class="hidden mt-5 fade-in">
-      <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=089999999999" alt="Kode QRIS" class="mx-auto rounded-lg border dark:border-gray-600">
-    </div>
-  </div>
-  <div onclick="copyPayment('Dana', '083160556330')" class="cursor-pointer rounded-2xl p-5 shadow-lg bg-white dark:bg-gray-800 border-t-4 border-blue-400 hover:scale-[1.02] transition-all duration-200">
-    <div class="flex items-center space-x-5">
-      <img src="https://seeklogo.com/images/D/dana-logo-0B805BCE50-seeklogo.com.png" class="w-12 h-12" alt="Dana">
-      <div>
-        <h2 class="font-bold text-xl">Dana</h2>
-        <p class="text-sm text-gray-500 dark:text-gray-300">Pembayaran dari Dana</p>
-      </div>
-    </div>
-  </div>
-  <div onclick="copyPayment('OVO', '083160556330')" class="cursor-pointer rounded-2xl p-5 shadow-lg bg-white dark:bg-gray-800 border-t-4 border-purple-400 hover:scale-[1.02] transition-all duration-200">
-    <div class="flex items-center space-x-5">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/3/3b/Logo_OVO.png" class="w-12 h-12" alt="OVO">
-      <div>
-        <h2 class="font-bold text-xl">OVO</h2>
-        <p class="text-sm text-gray-500 dark:text-gray-300">Pembayaran dari OVO</p>
-      </div>
-    </div>
-  </div>
-  <div onclick="copyPayment('Gopay', '083160556330')" class="cursor-pointer rounded-2xl p-5 shadow-lg bg-white dark:bg-gray-800 border-t-4 border-teal-400 hover:scale-[1.02] transition-all duration-200">
-    <div class="flex items-center space-x-5">
-      <img src="https://gopay.co.id/_nuxt/img/gopay-logo.1a2efc1.svg" class="w-12 h-12" alt="Gopay">
-      <div>
-        <h2 class="font-bold text-xl">Gopay</h2>
-        <p class="text-sm text-gray-500 dark:text-gray-300">Pembayaran dari GoPay</p>
-      </div>
-    </div>
-  </div>
 </div>
 
-<div id="alert" class="fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-full text-sm shadow-lg hidden fade-in"></div>
+<script>
+    const fileInput = document.getElementById('fileInput');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const resultBox = document.getElementById('resultBox');
+    const urlLink = document.getElementById('urlLink');
+    const loader = document.getElementById('loader');
 
-  </main>
-  <footer class="text-center py-6 bg-gray-100 dark:bg-gray-800 transition-colors duration-300">
-    <p class="text-sm text-gray-600 dark:text-gray-400">&copy; 2025 All Payment Radzz</p>
-    <div class="mt-4 flex justify-center space-x-3">
-      <a href="https://wa.me/nowamu" class="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-full text-sm">WhatsApp</a>
-      <a href="https://t.me/InuuUtama" class="bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded-full text-sm">Telegram</a>
-    </div>
-  </footer>  <script>
-    function copyPayment(method, number) {
-      navigator.clipboard.writeText(number).then(() => {
-        const alertBox = document.getElementById('alert');
-        alertBox.textContent = `Nomor pembayaran ${method} (${number}) telah disalin.`;
-        alertBox.classList.remove('hidden');
+    uploadBtn.addEventListener('click', async () => {
+        if (!fileInput.files[0]) return alert("Pilih file dulu!");
 
-        setTimeout(() => {
-          alertBox.classList.add('hidden');
-        }, 5000);
-      });
-    }
+        const file = fileInput.files[0];
+        const formData = new FormData();
+        formData.append('reqtype', 'fileupload');
+        // Masukkan Userhash Anda di bawah jika ingin masuk ke akun pribadi, 
+        // jika dikosongkan akan menjadi anonim (tetap jadi URL).
+        formData.append('userhash', ''); 
+        formData.append('fileToUpload', file);
 
-    function toggleQRIS() {
-      const qrisImg = document.getElementById('qris-img');
-      qrisImg.classList.toggle('hidden');
-      qrisImg.classList.add('fade-in');
-    }
+        // UI State
+        uploadBtn.disabled = true;
+        loader.style.display = 'block';
+        resultBox.style.display = 'none';
 
-    const toggle = document.getElementById('theme-toggle');
-    toggle.addEventListener('click', () => {
-      document.documentElement.classList.toggle('dark');
-      if (document.documentElement.classList.contains('dark')) {
-        localStorage.setItem('theme', 'dark');
-      } else {
-        localStorage.setItem('theme', 'light');
-      }
+        try {
+            // Menggunakan proxy cors-anywhere untuk bypass kebijakan CORS browser
+            const proxy = "https://is-cors-anywhere.fly.dev/"; 
+            const target = "https://catbox.moe/user/api.php";
+
+            const response = await fetch(proxy + target, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const link = await response.text();
+                urlLink.href = link;
+                urlLink.innerText = link;
+                resultBox.style.display = 'block';
+            } else {
+                alert("Gagal mengunggah. Coba lagi nanti.");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Terjadi kesalahan koneksi.");
+        } finally {
+            uploadBtn.disabled = false;
+            loader.style.display = 'none';
+        }
     });
-  </script>
-  </body>
+
+    function copyURL() {
+        const text = urlLink.innerText;
+        navigator.clipboard.writeText(text);
+        alert("Link tersalin!");
+    }
+</script>
+
+</body>
 </html>
